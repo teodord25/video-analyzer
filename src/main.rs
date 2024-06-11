@@ -12,6 +12,10 @@ fn App() -> impl IntoView {
 
     let (x, set_x) = create_signal(0);
 
+    let double_count = move || count() * 2;
+
+    let html = "<p> This html will be injected </p>";
+
     view! {
         <button
             on:click=move |_| {
@@ -42,7 +46,12 @@ fn App() -> impl IntoView {
 
         <progress
                 max="50"
-                value=count
+                value=double_count
         />
+
+        <p inner_html=html>
+            "Double count: "
+            {double_count}
+        </p>
     }
 }
