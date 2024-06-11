@@ -8,9 +8,23 @@ fn main() {
 
 #[component]
 fn App() -> impl IntoView {
+    let (count, set_count) = create_signal(0);
+
     let (x, set_x) = create_signal(0);
 
     view! {
+        <button
+            on:click=move |_| {
+                set_count.update(|n| *n += 1)
+            }
+
+            class:red=move || count() % 2 == 1
+        >
+            "Click me: "
+            // on stable, this is move || count.get();
+            {count}
+        </button>
+
         <button
             on:click=move |_| {
                 set_x.update(|n| *n += 10)
@@ -25,5 +39,10 @@ fn App() -> impl IntoView {
                 >
             "Click to move"
         </button>
+
+        <progress
+                max="50"
+                value=count
+        />
     }
 }
