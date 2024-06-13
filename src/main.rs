@@ -39,10 +39,33 @@ fn ProgressBar(
     }
 }
 
+// NOTE: into() approach
+// #[component]
+// fn ProgressBar4(
+//     #[prop(default = 10)]
+//     max: u16,
+//
+//     // .into() converts `ReadSignal` to `Signal`
+//     // <ProgressBar progress=count/>
+//     // use `Signal::derive()` to wrap a derived signal
+//     // <ProgressBar progress=Signal::derive(double_count)/>]
+//
+//     #[prop(into)
+//     progress: Signal<i32>
+// ) -> impl IntoView {
+//     view! {
+//         <progress
+//             max=max
+//             value=progress
+//         />
+//     }
+// }
+
+
 // NOTE: you can use where clause
 // #[component]
 // fn ProgressBar2<F>(
-//     #[prop(default = 0)]
+//     #[prop(default = 10)]
 //     max: u16,
 //     progress: F
 // ) -> impl IntoView
@@ -61,7 +84,7 @@ fn ProgressBar(
 // NOTE: you can also inline generic
 // #[component]
 // fn ProgressBar3<F: Fn() -> i32 + 'static>(
-//     #[prop(default = 0)]
+//     #[prop(default = 10)]
 //     max: u16,
 //     progress: F
 // ) -> impl IntoView {
