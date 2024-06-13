@@ -19,6 +19,7 @@ fn App() -> impl IntoView {
         <ProgressBar progress=count/>
         <ProgressBar progress=double_count/>
         <Iterator/>
+        <IteratorOfDynamicStuff/>
     }
 }
 
@@ -51,6 +52,32 @@ fn Iterator() -> impl IntoView {
             {values.into_iter()
                 .map(|n| view! { <li>{n}</li>})
                 .collect_view()} // convenient helper func eq to .collect::<Vec<_>>()
+        </ul>
+    }
+}
+
+#[component]
+fn IteratorOfDynamicStuff() -> impl IntoView {
+    let length = 5;
+    let counters = (1..length).map(|idx| create_signal(idx));
+
+    let counter_buttons = counters
+        .map(|(count, set_count)| {
+            view! {
+                <li>
+                    <button
+                        on:click=move |_| set_count.update(|n| *n += 1)
+                    >
+                        {count}
+                    </button>
+                </li>
+            }
+        })
+        .collect_view();
+
+    view! {
+        <ul>
+            {counter_buttons}
         </ul>
     }
 }
