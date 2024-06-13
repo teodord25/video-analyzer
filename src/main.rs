@@ -18,6 +18,7 @@ fn App() -> impl IntoView {
 
         <ProgressBar progress=count/>
         <ProgressBar progress=double_count/>
+        <Iterator/>
     }
 }
 
@@ -29,13 +30,28 @@ fn ProgressBar(
     max: u16,
 
     /// How much progress has been made.
-    progress: impl Fn() -> i32 + 'static
+    progress: impl Fn() -> i32 + 'static,
 ) -> impl IntoView {
     view! {
         <progress
             max=max
             value=progress
         />
+    }
+}
+
+#[component]
+fn Iterator() -> impl IntoView {
+    let values = vec![0, 1, 2];
+    view! {
+        // this will just render "012"
+        <p>{values.clone()}</p>
+        // or we can wrap them in <li>
+        <ul>
+            {values.into_iter()
+                .map(|n| view! { <li>{n}</li>})
+                .collect_view()} // convenient helper func eq to .collect::<Vec<_>>()
+        </ul>
     }
 }
 
@@ -61,7 +77,6 @@ fn ProgressBar(
 //     }
 // }
 
-
 // NOTE: you can use where clause
 // #[component]
 // fn ProgressBar2<F>(
@@ -79,7 +94,6 @@ fn ProgressBar(
 //         />
 //     }
 // }
-
 
 // NOTE: you can also inline generic
 // #[component]
