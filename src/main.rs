@@ -21,14 +21,14 @@ fn App() -> impl IntoView {
     }
 }
 
+/// Shows progress towards a goal.
 #[component]
 fn ProgressBar(
-    #[prop(optional)] // optional means it can be omitted from the tag (but then the default will
-    // be Default::default() for the type)
-
+    /// The maximum value of the progress bar.
     #[prop(default = 10)] // you can set a default value for a prop
     max: u16,
 
+    /// How much progress has been made.
     progress: impl Fn() -> i32 + 'static
 ) -> impl IntoView {
     view! {
