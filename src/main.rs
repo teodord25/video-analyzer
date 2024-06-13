@@ -20,7 +20,7 @@ fn App() -> impl IntoView {
 
 #[component]
 fn ProgressBar(
-    progress: ReadSignal<i32>
+    progress: ReadSignal<i32> // this is a `property`, which is like an HTML attribute
 ) -> impl IntoView {
     view! {
         <progress
