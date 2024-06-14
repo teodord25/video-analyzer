@@ -6,60 +6,92 @@ fn main() {
     mount_to_body(|| view! { <App/> })
 }
 
-#[derive(Debug, Clone)]
-struct DatabaseEntry {
-    key: String,
-    value: i32,
-}
-
 #[component]
-pub fn App() -> impl IntoView {
-    // start with a set of three rows
-    let (data, set_data) = create_signal(vec![
-        DatabaseEntry {
-            key: "foo".to_string(),
-            value: 10,
-        },
-        DatabaseEntry {
-            key: "bar".to_string(),
-            value: 20,
-        },
-        DatabaseEntry {
-            key: "baz".to_string(),
-            value: 15,
-        },
-    ]);
+fn App() -> impl IntoView {
+    let (name, set_name) = create_signal("Uncontrolled".to_string());
+
+    let input_element: NodeRef<html::Input> = create_node_ref();
+
+
+    let on_submit = move |ev: leptos::ev::SubmitEvent| {
+        ev.prevent_default();
+        
+        let value = input_element()
+            // NodeRef is an Option becaues event handlers can only fire after the 
+            // view is mounted to the DOM so its safe to unwrap here
+            .expect("<input> element should be mounted")
+            // html::input implements Deref so we can call ::value() to get the current value
+            .value();
+        set_name(value);
+    };
+    
+
     view! {
-                // when we click, update each row,
-                // doubling its value
-                <button on:click=move |_| {
-                    set_data.update(|data| {
-                        for row in data {
-                            row.value *= 2;
-                        }
-                    });
-                    // log the new value of the signal
-                    logging::log!("{:?}", data.get());
-                }>
-                    "Update Values"
-                </button>
-                // iterate over the rows and display each value
-        <For
-            each=move || data().into_iter().enumerate()
-            key=|(_, state)| state.key.clone()
-            children=move |(index, _)| {
-                let value = create_memo(move |_| {
-                    data.with(|data| data.get(index).map(|d| d.value).unwrap_or(0))
-                });
-                view! {
-                    <p>{value}</p>
-                }
-            }
-        />
+        <form on:submit=on_submit> // on_submit defined below
+            <input type="text"
+                value=name
+                node_ref=input_element
+            />
+            <input type="submit" value="Submit"/>
+        </form>
+        <p>"Name is: " {name}</p>
     }
 }
 
+// #[derive(Debug, Clone)]
+// struct DatabaseEntry {
+//     key: String,
+//     value: i32,
+// }
+//
 // #[component]
+// pub fn App() -> impl IntoView {
+//     // start with a set of three rows
+//     let (data, set_data) = create_signal(vec![
+//         DatabaseEntry {
+//             key: "foo".to_string(),
+//             value: 10,
+//         },
+//         DatabaseEntry {
+//             key: "bar".to_string(),
+//             value: 20,
+//         },
+//         DatabaseEntry {
+//             key: "baz".to_string(),
+//             value: 15,
+//         },
+//     ]);
+//     view! {
+//                 // when we click, update each row,
+//                 // doubling its value
+//                 <button on:click=move |_| {
+//                     set_data.update(|data| {
+//                         for row in data {
+//                             row.value *= 2;
+//                         }
+//                     });
+//                     // log the new value of the signal
+//                     logging::log!("{:?}", data.get());
+//                 }>
+//                     "Update Values"
+//                 </button>
+//                 // iterate over the rows and display each value
+//         <For
+//             each=move || data().into_iter().enumerate()
+//             key=|(_, state)| state.key.clone()
+//             children=move |(index, _)| {
+//                 let value = create_memo(move |_| {
+//                     data.with(|data| data.get(index).map(|d| d.value).unwrap_or(0))
+//                 });
+//                 view! {
+//                     <p>{value}</p>
+//                 }
+//             }
+//         />
+//     }
+// }
+//
+// // #[component]
 // fn App() -> impl IntoView {
 //     let (count, set_count) = create_signal(0);
 //     let double_count = move || count() * 2;
