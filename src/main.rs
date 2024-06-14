@@ -33,7 +33,7 @@ pub fn App() -> impl IntoView {
         // when we click, update each row,
         // doubling its value
         <button on:click=move |_| {
-            set_data.update(|data| {
+            data.with(|data| {
                 for row in data {
                     row.value.update(|v| *v *= 2);
                 }
