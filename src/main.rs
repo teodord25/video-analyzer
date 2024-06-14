@@ -17,28 +17,48 @@ pub fn App() -> impl IntoView {
     //     </p>
     // }
 
-//     let message = move || is_odd().then(|| "DING DING DING");
-//
-//     view! {
-//         <p> { message } </p>
-//     }
-    
-    // NOTE: memoized rendering for anything conditional and
-    // complex that is expensive to rerender on every update
-    // this approach only renders the view when the condition changes
+    //     let message = move || is_odd().then(|| "DING DING DING");
+    //
+    //     view! {
+    //         <p> { message } </p>
+    //     }
+
+    //     // NOTE: memoized rendering for anything conditional and
+    //     // complex that is expensive to rerender on every update
+    //     // this approach only renders the view when the condition changes
+    //     view! {
+    //         <button on:click=move |_| set_value.update(|v| *v += 1)>
+    //             "Increment" {value}
+    //         </button>
+    //
+    //
+    //         <Show
+    //             when=move || { value() > 5 }
+    //             fallback=|| view! { "<ExampleComponent/>" }
+    //         >
+    //             "<ExampleComponentComplex/>"
+    //         </Show>
+    //
+    //     }
+
+    // NOTE: view! {/.../} returns the exact html type, so in a match 
+    // you have to convert the values to HtmlElement<AnyElement> with .into_any()
+    // or if they arent all versions of htmlelement, you can convert them to a View using .into_view()
     view! {
-        <button on:click=move |_| set_value.update(|v| *v += 1)>
-            "Increment" {value}
-        </button>
-
-
-        <Show
-            when=move || { value() > 5 }
-            fallback=|| view! { "<ExampleComponent/>" }
-        >
-            "<ExampleComponentComplex/>"
-        </Show>
-
+        <main>
+            {move || match is_odd() {
+                true if value() == 1 => {
+                    // returns HtmlElement<Pre>
+                    view! { <pre>"One"</pre> }.into_any()
+                },
+                false if value() == 2 => {
+                    // returns HtmlElement<P>
+                    view! { <p>"Two"</p> }.into_any()
+                }
+                // returns HtmlElement<Textarea>
+                _ => view! { <textarea>{value()}</textarea> }.into_any()
+            }}
+        </main>
     }
 }
 
