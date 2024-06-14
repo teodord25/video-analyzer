@@ -8,32 +8,68 @@ fn main() {
 
 #[component]
 pub fn App() -> impl IntoView {
-    let (value, set_value) = create_signal("B".to_string());
-    view! {
-        <select on:change=move |ev| {
-            let new_value = event_target_value(&ev);
-            set_value(new_value);
-        }>
-            <SelectOption value is="A"/> // `value` here is equivalent to value=valuee
-            <SelectOption value is="B"/>
-            <SelectOption value is="C"/>
-        </select>
-    }
-}
+    let (value, set_value) = create_signal(1);
+    let is_odd = move || value() & 1 == 1;
 
-#[component]
-pub fn SelectOption(is: &'static str, value: ReadSignal<String>) -> impl IntoView {
+    // view! {
+    //     <p>
+    //         { move || if is_odd() { "Odd" } else { "Even" } }
+    //     </p>
+    // }
+
+//     let message = move || is_odd().then(|| "DING DING DING");
+//
+//     view! {
+//         <p> { message } </p>
+//     }
+    
+    // NOTE: memoized rendering for anything conditional and
+    // complex that is expensive to rerender on every update
+    // this approach only renders the view when the condition changes
     view! {
-        <option
-            value=is
-            selected=move || value() == is
+        <button on:click=move |_| set_value.update(|v| *v += 1)>
+            "Increment" {value}
+        </button>
+
+
+        <Show
+            when=move || { value() > 5 }
+            fallback=|| view! { "<ExampleComponent/>" }
         >
-            {is}
-        </option>
+            "<ExampleComponentComplex/>"
+        </Show>
+
     }
 }
 
 // #[component]
+// pub fn App() -> impl IntoView {
+//     let (value, set_value) = create_signal("B".to_string());
+//     view! {
+//         <select on:change=move |ev| {
+//             let new_value = event_target_value(&ev);
+//             set_value(new_value);
+//         }>
+//             <SelectOption value is="A"/> // `value` here is equivalent to value=valuee
+//             <SelectOption value is="B"/>
+//             <SelectOption value is="C"/>
+//         </select>
+//     }
+// }
+//
+// #[component]
+// pub fn SelectOption(is: &'static str, value: ReadSignal<String>) -> impl IntoView {
+//     view! {
+//         <option
+//             value=is
+//             selected=move || value() == is
+//         >
+//             {is}
+//         </option>
+//     }
+// }
+//
+// // #[component]
 // fn App() -> impl IntoView {
 //     let (name, set_name) = create_signal("Uncontrolled".to_string());
 //
