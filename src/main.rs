@@ -7,22 +7,32 @@ fn main() {
 }
 
 #[component]
-fn App() -> impl IntoView {
-    let (name, set_name) = create_signal("TextArea".to_string());
-
+pub fn App() -> impl IntoView {
+    let (value, set_value) = create_signal("B".to_string());
     view! {
-        <textarea
-            // textarea does not have a value attribute
-            // but it does have a value property
-            prop:value=name
-            on:input=move |ev| set_name(event_target_value(&ev))
-        >
-            "Initial value lads"
-        </textarea>
-        <p>"Name is: " {name}</p>
+        <select on:change=move |ev| {
+            let new_value = event_target_value(&ev);
+            set_value(new_value);
+        }>
+            <SelectOption value is="A"/> // `value` here is equivalent to value=valuee
+            <SelectOption value is="B"/>
+            <SelectOption value is="C"/>
+        </select>
     }
 }
-//
+
+#[component]
+pub fn SelectOption(is: &'static str, value: ReadSignal<String>) -> impl IntoView {
+    view! {
+        <option
+            value=is
+            selected=move || value() == is
+        >
+            {is}
+        </option>
+    }
+}
+
 // #[component]
 // fn App() -> impl IntoView {
 //     let (name, set_name) = create_signal("Uncontrolled".to_string());
@@ -32,16 +42,16 @@ fn App() -> impl IntoView {
 //
 //     let on_submit = move |ev: leptos::ev::SubmitEvent| {
 //         ev.prevent_default();
-//         
+//
 //         let value = input_element()
-//             // NodeRef is an Option becaues event handlers can only fire after the 
+//             // NodeRef is an Option becaues event handlers can only fire after the
 //             // view is mounted to the DOM so its safe to unwrap here
 //             .expect("<input> element should be mounted")
 //             // html::input implements Deref so we can call ::value() to get the current value
 //             .value();
 //         set_name(value);
 //     };
-//     
+//
 //
 //     view! {
 //         <form on:submit=on_submit> // on_submit defined below
