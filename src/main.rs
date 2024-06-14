@@ -8,37 +8,54 @@ fn main() {
 
 #[component]
 fn App() -> impl IntoView {
-    let (name, set_name) = create_signal("Uncontrolled".to_string());
-
-    let input_element: NodeRef<html::Input> = create_node_ref();
-
-
-    let on_submit = move |ev: leptos::ev::SubmitEvent| {
-        ev.prevent_default();
-        
-        let value = input_element()
-            // NodeRef is an Option becaues event handlers can only fire after the 
-            // view is mounted to the DOM so its safe to unwrap here
-            .expect("<input> element should be mounted")
-            // html::input implements Deref so we can call ::value() to get the current value
-            .value();
-        set_name(value);
-    };
-    
+    let (name, set_name) = create_signal("TextArea".to_string());
 
     view! {
-        <form on:submit=on_submit> // on_submit defined below
-            <input type="text"
-                value=name
-                node_ref=input_element
-            />
-            <input type="submit" value="Submit"/>
-        </form>
+        <textarea
+            // textarea does not have a value attribute
+            // but it does have a value property
+            prop:value=name
+            on:input=move |ev| set_name(event_target_value(&ev))
+        >
+            "Initial value lads"
+        </textarea>
         <p>"Name is: " {name}</p>
     }
 }
-
-// #[derive(Debug, Clone)]
+//
+// #[component]
+// fn App() -> impl IntoView {
+//     let (name, set_name) = create_signal("Uncontrolled".to_string());
+//
+//     let input_element: NodeRef<html::Input> = create_node_ref();
+//
+//
+//     let on_submit = move |ev: leptos::ev::SubmitEvent| {
+//         ev.prevent_default();
+//         
+//         let value = input_element()
+//             // NodeRef is an Option becaues event handlers can only fire after the 
+//             // view is mounted to the DOM so its safe to unwrap here
+//             .expect("<input> element should be mounted")
+//             // html::input implements Deref so we can call ::value() to get the current value
+//             .value();
+//         set_name(value);
+//     };
+//     
+//
+//     view! {
+//         <form on:submit=on_submit> // on_submit defined below
+//             <input type="text"
+//                 value=name
+//                 node_ref=input_element
+//             />
+//             <input type="submit" value="Submit"/>
+//         </form>
+//         <p>"Name is: " {name}</p>
+//     }
+// }
+//
+// // #[derive(Debug, Clone)]
 // struct DatabaseEntry {
 //     key: String,
 //     value: i32,
