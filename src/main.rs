@@ -9,7 +9,7 @@ fn main() {
 #[derive(Debug, Clone)]
 struct DatabaseEntry {
     key: String,
-    value: RwSignal<i32>,
+    value: i32,
 }
 
 #[component]
@@ -18,39 +18,44 @@ pub fn App() -> impl IntoView {
     let (data, set_data) = create_signal(vec![
         DatabaseEntry {
             key: "foo".to_string(),
-            value: create_rw_signal(10),
+            value: 10,
         },
         DatabaseEntry {
             key: "bar".to_string(),
-            value: create_rw_signal(20),
+            value: 20,
         },
         DatabaseEntry {
             key: "baz".to_string(),
-            value: create_rw_signal(15),
+            value: 15,
         },
     ]);
     view! {
-        // when we click, update each row,
-        // doubling its value
-        <button on:click=move |_| {
-            data.with(|data| {
-                for row in data {
-                    row.value.update(|v| *v *= 2);
-                }
-            });
-            // log the new value of the signal
-            logging::log!("{:?}", data.get());
-        }>
-            "Update Values"
-        </button>
-        // iterate over the rows and display each value
+                // when we click, update each row,
+                // doubling its value
+                <button on:click=move |_| {
+                    set_data.update(|data| {
+                        for row in data {
+                            row.value *= 2;
+                        }
+                    });
+                    // log the new value of the signal
+                    logging::log!("{:?}", data.get());
+                }>
+                    "Update Values"
+                </button>
+                // iterate over the rows and display each value
         <For
-            each=data
-            key=|state| state.key.clone()
-            let:child
-        >
-            <p>{child.value}</p>
-        </For>
+            each=move || data().into_iter().enumerate()
+            key=|(_, state)| state.key.clone()
+            children=move |(index, _)| {
+                let value = create_memo(move |_| {
+                    data.with(|data| data.get(index).map(|d| d.value).unwrap_or(0))
+                });
+                view! {
+                    <p>{value}</p>
+                }
+            }
+        />
     }
 }
 
