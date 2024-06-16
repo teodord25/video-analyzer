@@ -15,18 +15,18 @@ pub fn App() -> impl IntoView {
     let (toggled, set_toggled) = create_signal(false);
     view! {
         <p>"Toggled? " {toggled}</p>
-        // you pass the callback to the child component
         <ButtonB on_click=move |_| set_toggled.update(|value| *value = !*value)/>
     }
 }
 
 
 #[component]
-pub fn ButtonB(#[prop(into)] on_click: Callback<MouseEvent>) -> impl IntoView
+pub fn ButtonB<F>(on_click: F) -> impl IntoView
+where
+    F: Fn(MouseEvent) + 'static
 {
     view! {
-        <button on:click=on_click> // the child click event is only used to execute the on_click
-        // function that was passed
+        <button on:click=on_click>
             "Toggle"
         </button>
     }
