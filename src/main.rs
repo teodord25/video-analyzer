@@ -1,5 +1,4 @@
 use leptos::*;
-use leptos::ev::MouseEvent;
 
 fn main() {
     console_error_panic_hook::set_once();
@@ -9,25 +8,21 @@ fn main() {
 
 // child -> parent communication
 //
-// 2. passing a callback from parent to child
+// 3. using an event listener if the callback maps to a native dom element
 #[component]
 pub fn App() -> impl IntoView {
     let (toggled, set_toggled) = create_signal(false);
     view! {
         <p>"Toggled? " {toggled}</p>
-        <ButtonB on_click=move |_| set_toggled.update(|value| *value = !*value)/>
+        <ButtonB on:click=move |_| set_toggled.update(|value| *value = !*value)/>
+        // using on:click now (event listener) instead of on_click (callback arg)
     }
 }
 
 
 #[component]
-pub fn ButtonB<F>(on_click: F) -> impl IntoView
-where
-    F: Fn(MouseEvent) + 'static
-{
+pub fn ButtonB() -> impl IntoView {
     view! {
-        <button on:click=on_click>
-            "Toggle"
-        </button>
+        <button> "Toggle" </button>
     }
 }
